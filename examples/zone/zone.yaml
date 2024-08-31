@@ -1,0 +1,10 @@
+apiVersion: zone.ns1.crossplane.io/v1alpha1
+kind: Zone
+metadata:
+  name: hello-zone
+spec:
+  forProvider:
+    zone: "crossplane.example.com"
+    ttl: 600
+  providerConfigRef:
+    name: default
