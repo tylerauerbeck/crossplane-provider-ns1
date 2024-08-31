@@ -1,40 +1,1008 @@
-name: hashicorp/null
+name: ns1-terraform/ns1
 resources:
-    null_resource:
+    ns1_account_whitelist:
         subCategory: ""
-        description: The null_resource resource implements the standard resource lifecycle but takes no further action. On Terraform 1.4 and later, use the terraform_data resource type https://developer.hashicorp.com/terraform/language/resources/terraform-data instead. The triggers argument allows specifying an arbitrary set of values that, when changed, will cause the resource to be replaced.
-        name: null_resource
-        title: null_resource Resource - terraform-provider-null
+        description: Provides a NS1 Global IP Whitelist resource.
+        name: ns1_account_whitelist
+        title: ns1_account_whitelist
         examples:
-            - name: cluster
+            - name: example
               manifest: |-
                 {
-                  "connection": [
-                    {
-                      "host": "${element(aws_instance.cluster[*].public_ip, 0)}"
-                    }
+                  "name": "Example Whitelist",
+                  "values": [
+                    "1.1.1.1",
+                    "2.2.2.2"
+                  ]
+                }
+        argumentDocs:
+            name: '- (Required) The free form name of the whitelist.'
+            values: '- (Required) Array of IP addresses/networks from which to allow access.'
+        importStatements: []
+    ns1_apikey:
+        subCategory: ""
+        description: Provides a NS1 Api Key resource.
+        name: ns1_apikey
+        title: ns1_apikey
+        examples:
+            - name: example
+              manifest: |-
+                {
+                  "account_manage_users": false,
+                  "dns_view_zones": false,
+                  "ip_whitelist": [
+                    "1.1.1.1",
+                    "2.2.2.2"
                   ],
-                  "provisioner": {
-                    "remote-exec": [
-                      {
-                        "inline": [
-                          "bootstrap-cluster.sh ${join(\" \",\n      aws_instance.cluster[*].private_ip)}"
-                        ]
-                      }
-                    ]
-                  },
-                  "triggers": {
-                    "cluster_instance_ids": "${join(\",\", aws_instance.cluster[*].id)}"
-                  }
+                  "name": "Example key",
+                  "teams": [
+                    "${ns1_team.example.id}"
+                  ]
                 }
               dependencies:
-                aws_instance.cluster: |-
+                ns1_team.example: |-
                     {
-                      "ami": "ami-0dcc1e21636832c5d",
-                      "count": 3,
-                      "instance_type": "m5.large"
+                      "name": "Example team"
                     }
         argumentDocs:
-            id: (String) This is set to a random value at create time.
-            triggers: (Map of String) A map of arbitrary strings that, when changed, will force the null resource to be replaced, re-running any associated provisioners.
+            account_manage_account_settings: '- (Optional) Whether the apikey can modify account settings.'
+            account_manage_apikeys: '- (Optional) Whether the apikey can modify account apikeys.'
+            account_manage_ip_whitelist: '- (Optional) Whether the apikey can manage ip whitelist.'
+            account_manage_payment_methods: '- (Optional) Whether the apikey can modify account payment methods.'
+            account_manage_plan: '- (Deprecated) No longer in use.'
+            account_manage_teams: '- (Optional) Whether the apikey can modify other teams in the account.'
+            account_manage_users: '- (Optional) Whether the apikey can modify account users.'
+            account_view_activity_log: '- (Optional) Whether the apikey can view activity logs.'
+            account_view_invoices: '- (Optional) Whether the apikey can view invoices.'
+            data_manage_datafeeds: '- (Optional) Whether the apikey can modify data feeds.'
+            data_manage_datasources: '- (Optional) Whether the apikey can modify data sources.'
+            data_push_to_datafeeds: '- (Optional) Whether the apikey can publish to data feeds.'
+            dns_manage_zones: '- (Optional) Whether the apikey can modify the accounts zones.'
+            dns_records_allow: '- (Optional) List of records that the apikey may access.'
+            dns_records_deny: '- (Optional) List of records that the apikey may not access.'
+            dns_view_zones: '- (Optional) Whether the apikey can view the accounts zones.'
+            dns_zones_allow: '- (Optional) List of zones that the apikey may access.'
+            dns_zones_allow_by_default: '- (Optional) If true, enable the dns_zones_allow list, otherwise enable the dns_zones_deny list.'
+            dns_zones_deny: '- (Optional) List of zones that the apikey may not access.'
+            ip_whitelist: '- (Optional) Array of IP addresses/networks to which to grant the API key access.'
+            ip_whitelist_strict: '- (Optional) Set to true to restrict access to only those IP addresses and networks listed in the ip_whitelist field.'
+            key: '- (Computed) The apikeys authentication token.'
+            monitoring_create_jobs: '- (Optional) Whether the user can create monitoring jobs when manage_jobs is not set to true.'
+            monitoring_delete_jobs: '- (Optional) Whether the user can delete monitoring jobs when manage_jobs is not set to true.'
+            monitoring_manage_jobs: '- (Optional) Whether the user can create, update, and delete monitoring jobs.'
+            monitoring_manage_lists: '- (Optional) Whether the apikey can modify notification lists.'
+            monitoring_update_jobs: '- (Optional) Whether the user can update monitoring jobs when manage_jobs is not set to true.'
+            monitoring_view_jobs: '- (Optional) Whether the apikey can view monitoring jobs.'
+            name: '- (Required) The free form name of the apikey.'
+            security_manage_active_directory: |-
+                - (Optional) Whether the apikey can manage global active directory.
+                Only relevant for the DDI product.
+            security_manage_global_2fa: '- (Optional) Whether the apikey can manage global two factor authentication.'
+            teams: '- (Optional) The teams that the apikey belongs to.'
+        importStatements: []
+    ns1_application:
+        subCategory: ""
+        description: Provides a NS1 Pulsar Application resource.
+        name: ns1_application
+        title: ns1_application
+        examples:
+            - name: ns1_app
+              manifest: |-
+                {
+                  "name": "terraform_app"
+                }
+            - name: ns1_app
+              manifest: |-
+                {
+                  "active": true,
+                  "browser_wait_millis": 100,
+                  "jobs_per_transaction": 100,
+                  "name": "terraform_app"
+                }
+            - name: ns1_app
+              manifest: |-
+                {
+                  "default_config": [
+                    {
+                      "http": true,
+                      "https": false,
+                      "job_timeout_millis": 100,
+                      "request_timeout_millis": 100,
+                      "static_values": true
+                    }
+                  ],
+                  "name": "terraform_app"
+                }
+        argumentDocs:
+            active: |-
+                - (Optional)    Indicates whether or not this application is currently active and usable for traffic
+                steering.
+            browser_wait_millis: |-
+                - (Optional) The amount of time (in milliseconds) the browser should wait before running
+                measurements.
+            default_config: |-
+                -(Optional) Default job configuration. If a field is present here and not on a specific job
+                associated with this application, the default value specified here is used..
+            http: '- (Optional) Indicates whether or not to use HTTP in measurements.'
+            https: '- (Optional) Indicates whether or not to use HTTPS in measurements.'
+            job_timeout_millis: |-
+                - (Optional) - Maximum timeout per job
+                0, the primary NSONE Global Network. Normally, you should not have to worry about this.
+            jobs_per_transaction: -(Optional) Number of jobs to measure per user impression.
+            name: '- (Required) Descriptive name for this Pulsar app.'
+            request_timeout_millis: '- (Optional) Maximum timeout per request.'
+            static_values: '- (Optional) - Indicates whether or not to skip aggregation for this job''s measurements'
+            use_xhr: '- (Optional) - Whether to use XMLHttpRequest (XHR) when taking measurements.'
+        importStatements: []
+    ns1_datafeed:
+        subCategory: ""
+        description: Provides a NS1 Data Feed resource.
+        name: ns1_datafeed
+        title: ns1_datafeed
+        examples:
+            - name: uswest_feed
+              manifest: |-
+                {
+                  "config": {
+                    "label": "uswest"
+                  },
+                  "name": "uswest_feed",
+                  "source_id": "${ns1_datasource.example.id}"
+                }
+              references:
+                source_id: ns1_datasource.example.id
+              dependencies:
+                ns1_datasource.example: |-
+                    {
+                      "name": "example",
+                      "sourcetype": "nsone_v1"
+                    }
+                ns1_datasource.example_monitoring: |-
+                    {
+                      "name": "example_monitoring",
+                      "sourcetype": "nsone_monitoring"
+                    }
+            - name: useast_feed
+              manifest: |-
+                {
+                  "config": {
+                    "label": "useast"
+                  },
+                  "name": "useast_feed",
+                  "source_id": "${ns1_datasource.example.id}"
+                }
+              references:
+                source_id: ns1_datasource.example.id
+              dependencies:
+                ns1_datasource.example: |-
+                    {
+                      "name": "example",
+                      "sourcetype": "nsone_v1"
+                    }
+                ns1_datasource.example_monitoring: |-
+                    {
+                      "name": "example_monitoring",
+                      "sourcetype": "nsone_monitoring"
+                    }
+            - name: useast_monitor_feed
+              manifest: |-
+                {
+                  "config": {
+                    "jobid": "${ns1_monitoringjob.example_job.id}"
+                  },
+                  "name": "useast_monitor_feed",
+                  "source_id": "${ns1_datasource.example_monitoring.id}"
+                }
+              references:
+                source_id: ns1_datasource.example_monitoring.id
+              dependencies:
+                ns1_datasource.example: |-
+                    {
+                      "name": "example",
+                      "sourcetype": "nsone_v1"
+                    }
+                ns1_datasource.example_monitoring: |-
+                    {
+                      "name": "example_monitoring",
+                      "sourcetype": "nsone_monitoring"
+                    }
+        argumentDocs:
+            config: |-
+                - (Optional) The feeds configuration matching the specification in
+                feed_config from /data/sourcetypes. jobid is required in the config for datafeeds connected to NS1 monitoring.
+            name: '- (Required) The free form name of the data feed.'
+            source_id: '- (Required) The data source id that this feed is connected to.'
+        importStatements: []
+    ns1_datasource:
+        subCategory: ""
+        description: Provides a NS1 Data Source resource.
+        name: ns1_datasource
+        title: ns1_datasource
+        examples:
+            - name: example
+              manifest: |-
+                {
+                  "name": "example",
+                  "sourcetype": "nsone_v1"
+                }
+        argumentDocs:
+            config: |-
+                - (Optional) The data source configuration, determined by its type,
+                matching the specification in config from /data/sourcetypes.
+            name: '- (Required) The free form name of the data source.'
+            sourcetype: '- (Required) The data sources type, listed in API endpoint https://api.nsone.net/v1/data/sourcetypes.'
+        importStatements: []
+    ns1_dnsview:
+        subCategory: ""
+        description: Provides a NS1 DNS View resource.
+        name: ns1_dnsview
+        title: ns1_dnsview
+        examples:
+            - name: it
+              manifest: |-
+                {
+                  "name": "terraform_example",
+                  "preference": 1,
+                  "read_acls": [
+                    "acl_example_1",
+                    "acl_example_2"
+                  ],
+                  "update_acls": [
+                    "acl_example_1",
+                    "acl_example_2"
+                  ],
+                  "zones": [
+                    "terraform.example.io"
+                  ]
+                }
+        argumentDocs:
+            name: '- (Required) The name of the DNS view.'
+            networks: '- (Optional) Networks is an array of positive integers corresponding to the service definition(s) to which the zone is published.'
+            preference: '- (Optional/Computed) A unique value that indicates the priority of this view. This can be any value grather than 0 where a value of 1 indicates top priority.'
+            read_acls: '- (Optional) List of ACL names used with "read" permissions. The order of the ACLs determine how they are processed.'
+            update_acls: '- (Optional) List of ACL names used with "update" permissions. The order of the ACLs determine how they are processed.'
+            zones: '- (Optional) List of zone names.'
+        importStatements: []
+    ns1_monitoringjob:
+        subCategory: ""
+        description: Provides a NS1 Monitoring Job resource.
+        name: ns1_monitoringjob
+        title: ns1_monitoringjob
+        examples:
+            - name: uswest_monitor
+              manifest: |-
+                {
+                  "active": true,
+                  "config": {
+                    "host": "example-elb-uswest.aws.amazon.com",
+                    "port": 443,
+                    "send": "HEAD / HTTP/1.0\\r\\n\\r\\n",
+                    "ssl": 1
+                  },
+                  "frequency": 60,
+                  "job_type": "tcp",
+                  "mute": true,
+                  "name": "uswest",
+                  "policy": "quorum",
+                  "rapid_recheck": true,
+                  "regions": [
+                    "lga",
+                    "sjc",
+                    "sin"
+                  ],
+                  "rules": [
+                    {
+                      "comparison": "contains",
+                      "key": "output",
+                      "value": "200 OK"
+                    }
+                  ]
+                }
+        argumentDocs:
+            active: '- (Required) Indicates if the job is active or temporarily disabled.'
+            config: '- (Required) A configuration dictionary with keys and values depending on the job_type. Configuration details for each job_type are found by submitting a GET request to https://api.nsone.net/v1/monitoring/jobtypes.'
+            frequency: '- (Required) The frequency, in seconds, at which to run the monitoring job in each region.'
+            job_type: '- (Required) The type of monitoring job to be run. Refer to the NS1 API documentation (https://ns1.com/api#monitoring-jobs) for supported values which include ping, tcp, dns, http.'
+            mute: '- (Optional) turn off the notifications for the monitoring job.'
+            name: '- (Required) The free-form display name for the monitoring job.'
+            notes: '- (Optional) Freeform notes to be included in any notifications about this job.'
+            notify_delay: '- (Optional) The time in seconds after a failure to wait before sending a notification.'
+            notify_failback: '- (Optional) If true, a notification is sent when a job returns to an "up" state.'
+            notify_list: '- (Optional) The Terraform ID (e.g. ns1_notifylist.my_slack_notifier.id) of the notification list to which monitoring notifications should be sent.'
+            notify_regional: '- (Optional) If true, notifications are sent for any regional failure (and failback if desired), in addition to global state notifications.'
+            notify_repeat: '- (Optional) The time in seconds between repeat notifications of a failed job.'
+            policy: |-
+                - (Required) The policy for determining the monitor's global status
+                based on the status of the job in all regions. See NS1 API docs for supported values.
+            rapid_recheck: '- (Required) If true, on any apparent state change, the job is quickly re-run after one second to confirm the state change before notification.'
+            regions: |-
+                - (Required) The list of region codes in which to run the monitoring
+                job. See NS1 API docs for supported values.
+            rules: '- (Optional) A list of rules for determining failure conditions. Each rule acts on one of the outputs from the monitoring job. You must specify key (the output key); comparison (a comparison to perform on the the output); and value (the value to compare to). For example, {"key":"rtt", "comparison":"<", "value":100} is a rule requiring the rtt from a job to be under 100ms, or the job will be marked failed. Available output keys, comparators, and value types are are found by submitting a GET request to https://api.nsone.net/v1/monitoring/jobtypes.'
+        importStatements: []
+    ns1_notifylist:
+        subCategory: ""
+        description: Provides a NS1 Notify List resource.
+        name: ns1_notifylist
+        title: ns1_notifylist
+        examples:
+            - name: nl
+              manifest: |-
+                {
+                  "name": "my notify list",
+                  "notifications": [
+                    {
+                      "config": {
+                        "url": "http://www.mywebhook.com"
+                      },
+                      "type": "webhook"
+                    },
+                    {
+                      "config": {
+                        "email": "test@test.com"
+                      },
+                      "type": "email"
+                    }
+                  ]
+                }
+        argumentDocs:
+            config: '- (Required) Configuration details for the given notifier type.'
+            name: '- (Required) The free-form display name for the notify list.'
+            notifications: '- (Optional) A list of notifiers. All notifiers in a notification list will receive notifications whenever an event is send to the list (e.g., when a monitoring job fails). Notifiers are documented below.'
+            type: '- (Required) The type of notifier. Available notifiers are indicated in /notifytypes endpoint.'
+        importStatements: []
+    ns1_pulsarjob:
+        subCategory: ""
+        description: Provides a Pulsar Job resource.
+        name: ns1_pulsarjob
+        title: pulsarjob
+        examples:
+            - name: example_javascript
+              manifest: |-
+                {
+                  "app_id": "${ns1_pulsar_application.example.id}",
+                  "config": [
+                    {
+                      "host": "terraform.job_host.io",
+                      "url_path": "/terraform.job_url_path.io"
+                    }
+                  ],
+                  "name": "terraform.example_javascript.io",
+                  "type_id": "latency"
+                }
+              references:
+                app_id: ns1_pulsar_application.example.id
+              dependencies:
+                ns1_application.example: |-
+                    {
+                      "name": "terraform.example.io"
+                    }
+        argumentDocs:
+            Config: '- (Optional) Config is documented below. Note: Required if type_id is "latency"'
+            Config.host: '- (Required) Hostname where the resource is located.'
+            Config.http: '- (Optional) Indicates whether or not to use HTTP in measurements.'
+            Config.https: '- (Optional) Indicates whether or not to use HTTPS in measurements.'
+            Config.job_timeout_millis: '- (Optional) The amount of time to allow a single job to perform 1 run.'
+            Config.request_timeout_millis: '- (Optional) The amount of time to allow a single job to perform N runs.'
+            Config.static_values: '- (Optional) Indicates wheter or not to skip aggregation for this job''s measurements.'
+            Config.url_path: '- (Required) URL path to be appended to the host.'
+            Config.use_xhr: '- (Optional) Indicates wheter or not to use XmlHttpRequest (XHR) when taking measurements.'
+            active: '- (Optional) The job''s status, if it''s active or not.'
+            app_id: '- (Required) ID of the Pulsar app.'
+            name: '- (Required) Name of the Pulsar job. Typically, this is the name of the CDN or endpoint.'
+            shared: '- (Optional) Enable to share data with other approved accounts.'
+            type_id: '- (Required) Specifies the type of Pulsar job - either latency or custom.'
+        importStatements: []
+    ns1_record:
+        subCategory: ""
+        description: Provides a NS1 Record resource.
+        name: ns1_record
+        title: ns1_record
+        examples:
+            - name: www
+              manifest: |-
+                {
+                  "answers": [
+                    {
+                      "answer": "sub1.${ns1_zone.tld.zone}",
+                      "meta": {
+                        "up": "{\"feed\":\"${ns1_datafeed.foo.id}\"}"
+                      },
+                      "region": "east"
+                    },
+                    {
+                      "answer": "sub2.${ns1_zone.tld.zone}",
+                      "meta": {
+                        "connections": 3,
+                        "up": "{\"feed\":\"${ns1_datafeed.bar.id}\"}"
+                      }
+                    },
+                    {
+                      "answer": "sub3.${ns1_zone.tld.zone}",
+                      "meta": {
+                        "pulsar": "${jsonencode([{\n        \"job_id\"     = \"abcdef\",\n        \"bias\"       = \"*0.55\",\n        \"a5m_cutoff\" = 0.9\n      }])}",
+                        "subdivisions": "${jsonencode({\n\t\t\t  \"BR\" = [\"SP\", \"SC\"],\n\t\t\t  \"DZ\" = [\"01\", \"02\", \"03\"]\n\t\t  })}"
+                      }
+                    }
+                  ],
+                  "domain": "www.${ns1_zone.tld.zone}",
+                  "filters": [
+                    {
+                      "config": {
+                        "N": 1
+                      },
+                      "filter": "select_first_n"
+                    }
+                  ],
+                  "meta": {
+                    "up": true
+                  },
+                  "regions": [
+                    {
+                      "meta": {
+                        "georegion": "US-EAST"
+                      },
+                      "name": "east"
+                    },
+                    {
+                      "meta": {
+                        "country": "US"
+                      },
+                      "name": "usa"
+                    }
+                  ],
+                  "ttl": 60,
+                  "type": "CNAME",
+                  "zone": "${ns1_zone.tld.zone}"
+                }
+              references:
+                zone: ns1_zone.tld.zone
+              dependencies:
+                external_source.baz: |-
+                    {
+                      "domain": ".www.terraform.example.io",
+                      "zone": "terraform.example.io."
+                    }
+                ns1_datafeed.bar: |-
+                    {
+                      "config": {
+                        "label": "bar"
+                      },
+                      "name": "bar_feed",
+                      "source_id": "${ns1_datasource.ns1.id}"
+                    }
+                ns1_datafeed.foo: |-
+                    {
+                      "config": {
+                        "label": "foo"
+                      },
+                      "name": "foo_feed",
+                      "source_id": "${ns1_datasource.ns1.id}"
+                    }
+                ns1_datasource.ns1: |-
+                    {
+                      "name": "ns1_source",
+                      "sourcetype": "nsone_v1"
+                    }
+                ns1_zone.example: |-
+                    {
+                      "zone": "terraform.example.io"
+                    }
+            - name: external
+              manifest: |-
+                {
+                  "domain": "${replace(external_source.domain, \"/(^\\\\.)|(\\\\.$)/\", \"\")}",
+                  "type": "CNAME",
+                  "zone": "${replace(external_source.zone, \"/(^\\\\.)|(\\\\.$)/\", \"\")}"
+                }
+              dependencies:
+                external_source.baz: |-
+                    {
+                      "domain": ".www.terraform.example.io",
+                      "zone": "terraform.example.io."
+                    }
+                ns1_datafeed.bar: |-
+                    {
+                      "config": {
+                        "label": "bar"
+                      },
+                      "name": "bar_feed",
+                      "source_id": "${ns1_datasource.ns1.id}"
+                    }
+                ns1_datafeed.foo: |-
+                    {
+                      "config": {
+                        "label": "foo"
+                      },
+                      "name": "foo_feed",
+                      "source_id": "${ns1_datasource.ns1.id}"
+                    }
+                ns1_datasource.ns1: |-
+                    {
+                      "name": "ns1_source",
+                      "sourcetype": "nsone_v1"
+                    }
+                ns1_zone.example: |-
+                    {
+                      "zone": "terraform.example.io"
+                    }
+        argumentDocs:
+            ' meta': |-
+                - (Optional) meta is supported at the record level. Meta
+                is documented below.
+            answer: '- (Required) Space delimited string of RDATA fields dependent on the record type.'
+            answers: |-
+                - (Optional) One or more NS1 answers for the records' specified type.
+                Answers are documented below.
+            config: |-
+                - (Optional) The filters' configuration. Simple key/value pairs
+                determined by the filter type.
+            disabled: |-
+                - (Optional) Determines whether the filter is applied in the
+                filter chain.
+            domain: |-
+                - (Required) The records' domain. Cannot have leading or trailing
+                dots - see the example above and FQDN formatting below.
+            filter: '- (Required) The type of filter.'
+            filters: |-
+                - (Optional) One or more NS1 filters for the record(order matters).
+                Filters are documented below.
+            link: |-
+                - (Optional) The target record to link to. This means this record is a
+                'linked' record, and it inherits all properties from its target.
+            meta: |-
+                - (Optional) meta is supported at the regions level. Meta
+                is documented below.
+                Note that Meta values for country, ca_province, georegion, and
+                us_state should be comma separated strings, and changes in ordering will not
+                lead to terraform detecting a change.
+            name: '- (Required) Name of the region (or Answer Group).'
+            region: |-
+                - (Optional) The region (Answer Group really) that this answer
+                belongs to. This should be one of the names specified in regions. Only a
+                single region per answer is currently supported. If you want an answer in
+                multiple regions, duplicating the answer (including metadata) is the correct
+                approach.
+            regions: |-
+                - (Optional) One or more "regions" for the record. These are really
+                just groupings based on metadata, and are called "Answer Groups" in the NS1 UI,
+                but remain regions here for legacy reasons. Regions are
+                documented below. Please note the ordering requirement!
+            tags: '- map of tags in the form of "key" = "value" where both key and value are strings'
+            ttl: '- (Optional) The records'' time to live (in seconds).'
+            type: '- (Required) The records'' RR type.'
+            use_client_subnet: |-
+                - (Optional) Whether to use EDNS client subnet data when
+                available(in filter chain).
+            zone: |-
+                - (Required) The zone the record belongs to. Cannot have leading or
+                trailing dots (".") - see the example above and FQDN formatting below.
+        importStatements: []
+    ns1_redirect:
+        subCategory: ""
+        description: Provides a NS1 Redirect resource.
+        name: ns1_redirect
+        title: ns1_redirect
+        examples:
+            - name: example
+              manifest: |-
+                {
+                  "domain": "www.example.com",
+                  "path": "/from/path",
+                  "target": "https://url.com/target/path"
+                }
+        argumentDocs:
+            certificate: '- (Read Only) The certificate value.'
+            certificate_id: '- (Optional) The certificate redirect id.'
+            domain: '- (Required) The domain name to redirect from.'
+            errors: '- (Read Only) Any error encountered when applying the certificate.'
+            forwarding_mode: '- (Optional - defaults to "all") How the target is interpreted:'
+            forwarding_type: '- (Optional - defaults to "permanent") How the redirect is executed:'
+            https_enabled: '- (Read Only) True if HTTPS is supported on the source domain by using Let''s Encrypt certificates.'
+            https_forced: '- (Optional - defaults to true) Forces redirect for users that try to visit HTTP domain to HTTPS instead.'
+            id: '- (Optional) The redirect id, if already created.'
+            last_updated: '- (Read Only) The Unix timestamp representing when the redirect configuration was last updated.'
+            path: '- (Required) The path on the domain to redirect from.'
+            query_forwarding: '- (Optional - defaults to false) Enables the query string of a URL to be applied directly to the new target URL.'
+            tags: '- (Optional - array) Tags associated with the configuration.'
+            target: '- (Required) The URL to redirect to.'
+            valid_from: '- (Read Only) The Unix timestamp representing when the certificate first started being valid.'
+            valid_until: '- (Read Only) The Unix timestamp representing when the certificate will stop being valid.'
+        importStatements: []
+    ns1_team:
+        subCategory: ""
+        description: Provides a NS1 Team resource.
+        name: ns1_team
+        title: ns1_team
+        examples:
+            - name: example
+              manifest: |-
+                {
+                  "account_manage_users": false,
+                  "dns_view_zones": false,
+                  "ip_whitelist": [
+                    {
+                      "name": "whitelist-1",
+                      "values": [
+                        "1.1.1.1",
+                        "2.2.2.2"
+                      ]
+                    },
+                    {
+                      "name": "whitelist-2",
+                      "values": [
+                        "3.3.3.3",
+                        "4.4.4.4"
+                      ]
+                    }
+                  ],
+                  "name": "Example team"
+                }
+            - name: example2
+              manifest: |-
+                {
+                  "data_manage_datasources": true,
+                  "dns_records_allow": [
+                    {
+                      "domain": "terraform.example.io",
+                      "include_subdomains": false,
+                      "type": "A",
+                      "zone": "example.io"
+                    }
+                  ],
+                  "dns_view_zones": true,
+                  "dns_zones_allow": [
+                    "mytest.zone"
+                  ],
+                  "dns_zones_allow_by_default": true,
+                  "dns_zones_deny": [
+                    "myother.zone"
+                  ],
+                  "name": "another team"
+                }
+        argumentDocs:
+            account_manage_account_settings: '- (Optional) Whether the team can modify account settings.'
+            account_manage_apikeys: '- (Optional) Whether the team can modify account apikeys.'
+            account_manage_ip_whitelist: '- (Optional) Whether the team can manage ip whitelist.'
+            account_manage_payment_methods: '- (Optional) Whether the team can modify account payment methods.'
+            account_manage_plan: '- (Deprecated) No longer in use.'
+            account_manage_teams: '- (Optional) Whether the team can modify other teams in the account.'
+            account_manage_users: '- (Optional) Whether the team can modify account users.'
+            account_view_activity_log: '- (Optional) Whether the team can view activity logs.'
+            account_view_invoices: '- (Optional) Whether the team can view invoices.'
+            data_manage_datafeeds: '- (Optional) Whether the team can modify data feeds.'
+            data_manage_datasources: '- (Optional) Whether the team can modify data sources.'
+            data_push_to_datafeeds: '- (Optional) Whether the team can publish to data feeds.'
+            dns_manage_zones: '- (Optional) Whether the team can modify the accounts zones.'
+            dns_records_allow: '- (Optional) List of records that the team may access.'
+            dns_records_deny: '- (Optional) List of records that the team may not access.'
+            dns_view_zones: '- (Optional) Whether the team can view the accounts zones.'
+            dns_zones_allow: '- (Optional) List of zones that the team may access.'
+            dns_zones_allow_by_default: '- (Optional) If true, enable the dns_zones_allow list, otherwise enable the dns_zones_deny list.'
+            dns_zones_deny: '- (Optional) List of zones that the team may not access.'
+            ip_whitelist: '- (Optional) Array of IP addresses objects to chich to grant the team access. Each object includes a name (string), and values (array of strings) associated to each "allow" list.'
+            monitoring_create_jobs: '- (Optional) Whether the user can create monitoring jobs when manage_jobs is not set to true.'
+            monitoring_delete_jobs: '- (Optional) Whether the user can delete monitoring jobs when manage_jobs is not set to true.'
+            monitoring_manage_jobs: '- (Optional) Whether the user can create, update, and delete monitoring jobs.'
+            monitoring_manage_lists: '- (Optional) Whether the team can modify notification lists.'
+            monitoring_update_jobs: '- (Optional) Whether the user can update monitoring jobs when manage_jobs is not set to true.'
+            monitoring_view_jobs: '- (Optional) Whether the team can view monitoring jobs.'
+            name: '- (Required) The free form name of the team.'
+            security_manage_active_directory: |-
+                - (Optional) Whether the team can manage global active directory.
+                Only relevant for the DDI product.
+            security_manage_global_2fa: '- (Optional) Whether the team can manage global two factor authentication.'
+        importStatements: []
+    ns1_tsigkey:
+        subCategory: ""
+        description: Provides a NS1 TSIG Key resource.
+        name: ns1_tsigkey
+        title: ns1_tsigkey
+        examples:
+            - name: example
+              manifest: |-
+                {
+                  "algorithm": "hmac-sha256",
+                  "name": "ExampleTsigKey",
+                  "secret": "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLA=="
+                }
+        argumentDocs:
+            algorithm: '- (Required) The algorithm used to hash the TSIG key''s secret.'
+            name: '- (Required) The free form name of the tsigkey.'
+            secret: '- (Required) The key''s secret to be hashed.'
+        importStatements: []
+    ns1_user:
+        subCategory: ""
+        description: Provides a NS1 User resource.
+        name: ns1_user
+        title: ns1_user
+        examples:
+            - name: example
+              manifest: |-
+                {
+                  "email": "user@example.com",
+                  "name": "Example User",
+                  "notify": {
+                    "billing": false
+                  },
+                  "teams": [
+                    "${ns1_team.example.id}"
+                  ],
+                  "username": "example_user"
+                }
+              dependencies:
+                ns1_team.example: |-
+                    {
+                      "account_manage_users": false,
+                      "dns_view_zones": false,
+                      "ip_whitelist": [
+                        "1.1.1.1",
+                        "2.2.2.2"
+                      ],
+                      "name": "Example team"
+                    }
+        argumentDocs:
+            account_manage_account_settings: '- (Optional) Whether the user can modify account settings.'
+            account_manage_apikeys: '- (Optional) Whether the user can modify account apikeys.'
+            account_manage_ip_whitelist: '- (Optional) Whether the user can manage ip whitelist.'
+            account_manage_payment_methods: '- (Optional) Whether the user can modify account payment methods.'
+            account_manage_plan: '- (Deprecated) No longer in use.'
+            account_manage_teams: '- (Optional) Whether the user can modify other teams in the account.'
+            account_manage_users: '- (Optional) Whether the user can modify account users.'
+            account_view_activity_log: '- (Optional) Whether the user can view activity logs.'
+            account_view_invoices: '- (Optional) Whether the user can view invoices.'
+            data_manage_datafeeds: '- (Optional) Whether the user can modify data feeds.'
+            data_manage_datasources: '- (Optional) Whether the user can modify data sources.'
+            data_push_to_datafeeds: '- (Optional) Whether the user can publish to data feeds.'
+            dns_manage_zones: '- (Optional) Whether the user can modify the accounts zones.'
+            dns_view_zones: '- (Optional) Whether the user can view the accounts zones.'
+            dns_zones_allow: '- (Optional) List of zones that the user may access.'
+            dns_zones_allow_by_default: '- (Optional) If true, enable the dns_zones_allow list, otherwise enable the dns_zones_deny list.'
+            dns_zones_deny: '- (Optional) List of zones that the user may not access.'
+            email: '- (Required) The email address of the user.'
+            ip_whitelist: '- (Optional) Array of IP addresses/networks to which to grant the user access.'
+            ip_whitelist_strict: '- (Optional) Set to true to restrict access to only those IP addresses and networks listed in the ip_whitelist field.'
+            monitoring_create_jobs: '- (Optional) Whether the user can create monitoring jobs when manage_jobs is not set to true.'
+            monitoring_delete_jobs: '- (Optional) Whether the user can delete monitoring jobs when manage_jobs is not set to true.'
+            monitoring_manage_jobs: '- (Optional) Whether the user can create, update, and delete monitoring jobs.'
+            monitoring_manage_lists: '- (Optional) Whether the user can modify notification lists.'
+            monitoring_update_jobs: '- (Optional) Whether the user can update monitoring jobs when manage_jobs is not set to true.'
+            monitoring_view_jobs: '- (Optional) Whether the user can view monitoring jobs.'
+            name: '- (Required) The free form name of the user.'
+            notify: '- (Required) Whether or not to notify the user of specified events. Only billing is available currently.'
+            security_manage_active_directory: |-
+                - (Optional) Whether the user can manage global active directory.
+                Only relevant for the DDI product.
+            security_manage_global_2fa: '- (Optional) Whether the user can manage global two factor authentication.'
+            teams: '- (Required) The teams that the user belongs to.'
+            username: '- (Required) The users login name.'
+        importStatements: []
+    ns1_zone:
+        subCategory: ""
+        description: Provides a NS1 Zone resource.
+        name: ns1_zone
+        title: ns1_zone
+        examples:
+            - name: example
+              manifest: |-
+                {
+                  "ttl": 600,
+                  "zone": "terraform.example.io"
+                }
+              dependencies:
+                ns1_record.example_ns_management_ns: |-
+                    {
+                      "answers": [
+                        {
+                          "answer": "some_other_nameserver.example.com"
+                        }
+                      ],
+                      "domain": "${ns1_zone.example_ns_management.zone}",
+                      "dynamic": {
+                        "answers": [
+                          {
+                            "content": [
+                              {
+                                "answer": "${answers.value}"
+                              }
+                            ],
+                            "for_each": "${split(\",\", ns1_zone.example_ns_management.dns_servers)}"
+                          }
+                        ]
+                      },
+                      "type": "NS",
+                      "zone": "${ns1_zone.example_ns_management.zone}"
+                    }
+            - name: example_primary
+              manifest: |-
+                {
+                  "secondaries": [
+                    {
+                      "ip": "2.2.2.2"
+                    },
+                    {
+                      "ip": "3.3.3.3",
+                      "notify": true,
+                      "port": 5353
+                    }
+                  ],
+                  "zone": "terraform-primary.example.io"
+                }
+              dependencies:
+                ns1_record.example_ns_management_ns: |-
+                    {
+                      "answers": [
+                        {
+                          "answer": "some_other_nameserver.example.com"
+                        }
+                      ],
+                      "domain": "${ns1_zone.example_ns_management.zone}",
+                      "dynamic": {
+                        "answers": [
+                          {
+                            "content": [
+                              {
+                                "answer": "${answers.value}"
+                              }
+                            ],
+                            "for_each": "${split(\",\", ns1_zone.example_ns_management.dns_servers)}"
+                          }
+                        ]
+                      },
+                      "type": "NS",
+                      "zone": "${ns1_zone.example_ns_management.zone}"
+                    }
+            - name: example_primary
+              manifest: |-
+                {
+                  "additional_primaries": [
+                    "3.3.3.3",
+                    "4.4.4.4"
+                  ],
+                  "primary": "2.2.2.2",
+                  "zone": "terraform-primary.example.io"
+                }
+              dependencies:
+                ns1_record.example_ns_management_ns: |-
+                    {
+                      "answers": [
+                        {
+                          "answer": "some_other_nameserver.example.com"
+                        }
+                      ],
+                      "domain": "${ns1_zone.example_ns_management.zone}",
+                      "dynamic": {
+                        "answers": [
+                          {
+                            "content": [
+                              {
+                                "answer": "${answers.value}"
+                              }
+                            ],
+                            "for_each": "${split(\",\", ns1_zone.example_ns_management.dns_servers)}"
+                          }
+                        ]
+                      },
+                      "type": "NS",
+                      "zone": "${ns1_zone.example_ns_management.zone}"
+                    }
+            - name: example_ns_management
+              manifest: |-
+                {
+                  "autogenerate_ns_record": false,
+                  "zone": "terraform-ns.example.io"
+                }
+              dependencies:
+                ns1_record.example_ns_management_ns: |-
+                    {
+                      "answers": [
+                        {
+                          "answer": "some_other_nameserver.example.com"
+                        }
+                      ],
+                      "domain": "${ns1_zone.example_ns_management.zone}",
+                      "dynamic": {
+                        "answers": [
+                          {
+                            "content": [
+                              {
+                                "answer": "${answers.value}"
+                              }
+                            ],
+                            "for_each": "${split(\",\", ns1_zone.example_ns_management.dns_servers)}"
+                          }
+                        ]
+                      },
+                      "type": "NS",
+                      "zone": "${ns1_zone.example_ns_management.zone}"
+                    }
+            - name: example_tsig
+              manifest: |-
+                {
+                  "primary": "1.1.1.1",
+                  "tsig": {
+                    "enabled": true,
+                    "hash": "hmac-sha256",
+                    "key": "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLA==",
+                    "name": "terraform_tsigKey"
+                  },
+                  "zone": "terraform-tsig.example.io"
+                }
+              dependencies:
+                ns1_record.example_ns_management_ns: |-
+                    {
+                      "answers": [
+                        {
+                          "answer": "some_other_nameserver.example.com"
+                        }
+                      ],
+                      "domain": "${ns1_zone.example_ns_management.zone}",
+                      "dynamic": {
+                        "answers": [
+                          {
+                            "content": [
+                              {
+                                "answer": "${answers.value}"
+                              }
+                            ],
+                            "for_each": "${split(\",\", ns1_zone.example_ns_management.dns_servers)}"
+                          }
+                        ]
+                      },
+                      "type": "NS",
+                      "zone": "${ns1_zone.example_ns_management.zone}"
+                    }
+        argumentDocs:
+            additional_primaries: |-
+                - (Optional) List of additional IPv4 addresses for the primary
+                zone. Conflicts with secondaries.
+            autogenerate_ns_record: |-
+                - (Optional, default true). If set to false, clears
+                the autogenerated NS record on zone creation. This allows an automated
+                workflow for creating zones with the NS record in terraform state. See
+                above for an example. Note that this option only has an effect when a zone is
+                being created.
+            dns_servers: '- (Computed) Authoritative Name Servers.'
+            dnssec: |-
+                - (Optional/Computed) Whether or not DNSSEC is enabled for the zone.
+                Note that DNSSEC must be enabled on the account by support for this to be set
+                to true.
+            enabled: '- (Required) Enables the use of TSIG key.'
+            expiry: |-
+                - (Optional/Computed) The SOA Expiry. Conflicts with primary and
+                additional_primaries (default must be accepted).
+            hash: '- (Required) Hash algorithm used.'
+            hostmaster: '- (Computed) The SOA Hostmaster.'
+            ip: '- (Required) IPv4 address of the secondary server.'
+            key: '- (Required) The TSIG key secret.'
+            link: '- (Optional) The target zone(domain name) to link to.'
+            name: '- (Required) TSIG key name.'
+            networks: |-
+                - (Optional/Computed) List of network IDs for which the zone is
+                available. If no network is provided, the zone will be created in network 0,
+                the primary NS1 Global Network.
+            notify: |-
+                - (Optional) Whether we send NOTIFY messages to the secondary host
+                when the zone changes. Default false.
+            nx_ttl: |-
+                - (Optional/Computed) The SOA NX TTL. Conflicts with primary and
+                additional_primaries (default must be accepted).
+            port: '- (Optional) Port of the the secondary server. Default 53.'
+            primary: |-
+                - (Optional) The primary zones' IPv4 address. This makes the zone a
+                secondary. Conflicts with secondaries.
+            refresh: |-
+                - (Optional/Computed) The SOA Refresh. Conflicts with primary and
+                additional_primaries (default must be accepted).
+            retry: |-
+                - (Optional/Computed) The SOA Retry. Conflicts with primary and
+                additional_primaries (default must be accepted).
+            secondaries: |-
+                - (Optional) List of secondary servers. This makes the zone a
+                primary. Conflicts with primary and additional_primaries.
+                Secondaries is documented below.
+            tags: '- map of tags in the form of "key" = "value" where both key and value are strings'
+            tsig: '- TSIG is documented below'
+            ttl: '- (Optional/Computed) The SOA TTL.'
+            zone: '- (Required) The domain name of the zone.'
         importStatements: []
