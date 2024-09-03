@@ -21,7 +21,7 @@ import (
 	"github.com/pkg/errors"
 	ctrl "sigs.k8s.io/controller-runtime"
 
-	v1alpha1 "github.com/tylerauerbeck/provider-ns1/apis/zone/v1alpha1"
+	v1alpha1 "github.com/tylerauerbeck/provider-ns1/apis/ns1/v1alpha1"
 	features "github.com/tylerauerbeck/provider-ns1/internal/features"
 )
 

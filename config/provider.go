@@ -9,8 +9,6 @@ import (
 	_ "embed"
 
 	ujconfig "github.com/crossplane/upjet/pkg/config"
-
-	"github.com/tylerauerbeck/provider-ns1/config/zone"
 )
 
 const (
@@ -36,7 +34,7 @@ func GetProvider() *ujconfig.Provider {
 
 	for _, configure := range []func(provider *ujconfig.Provider){
 		// add custom config functions
-		zone.Configure,
+		// zone.Configure,
 	} {
 		configure(pc)
 	}

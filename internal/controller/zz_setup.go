@@ -9,16 +9,16 @@ import (
 
 	"github.com/crossplane/upjet/pkg/controller"
 
+	zone "github.com/tylerauerbeck/provider-ns1/internal/controller/ns1/zone"
 	providerconfig "github.com/tylerauerbeck/provider-ns1/internal/controller/providerconfig"
-	zone "github.com/tylerauerbeck/provider-ns1/internal/controller/zone/zone"
 )
 
 // Setup creates all controllers with the supplied logger and adds them to
 // the supplied manager.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
-		providerconfig.Setup,
 		zone.Setup,
+		providerconfig.Setup,
 	} {
 		if err := setup(mgr, o); err != nil {
 			return err
