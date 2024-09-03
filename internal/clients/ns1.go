@@ -26,7 +26,8 @@ const (
 	errExtractCredentials   = "cannot extract credentials"
 	errUnmarshalCredentials = "cannot unmarshal ns1 credentials as JSON"
 
-	apiKey = ""
+	keyAPIKey   = "apikey"
+	keyEndpoint = "endpoint"
 )
 
 // TerraformSetupBuilder builds Terraform a terraform.SetupFn function which
@@ -65,8 +66,13 @@ func TerraformSetupBuilder(version, providerSource, providerVersion string) terr
 		}
 
 		ps.Configuration = map[string]any{}
-		if v, ok := creds[apiKey]; ok {
-			ps.Configuration[apiKey] = v
+		if v, ok := creds[keyAPIKey]; ok {
+			ps.Configuration[keyAPIKey] = v
+		}
+
+		ps.Configuration = map[string]any{}
+		if v, ok := creds[keyEndpoint]; ok {
+			ps.Configuration[keyEndpoint] = v
 		}
 
 		return ps, nil
