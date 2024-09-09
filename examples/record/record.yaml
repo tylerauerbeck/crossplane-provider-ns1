@@ -1,0 +1,12 @@
+apiVersion: ns1.crossplane.io/v1alpha1
+kind: Record
+metadata:
+  name: hello-record
+spec:
+  forProvider:
+    answers:
+    - answer: crossplane-test.example.com
+    domain: test.crossplane.example.com
+    ttl: 60
+    type: CNAME
+    zone: crossplane.example.com
