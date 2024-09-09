@@ -9,6 +9,7 @@ import (
 
 	"github.com/crossplane/upjet/pkg/controller"
 
+	record "github.com/tylerauerbeck/provider-ns1/internal/controller/ns1/record"
 	zone "github.com/tylerauerbeck/provider-ns1/internal/controller/ns1/zone"
 	providerconfig "github.com/tylerauerbeck/provider-ns1/internal/controller/providerconfig"
 )
@@ -17,6 +18,7 @@ import (
 // the supplied manager.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
+		record.Setup,
 		zone.Setup,
 		providerconfig.Setup,
 	} {

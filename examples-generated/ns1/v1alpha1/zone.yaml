@@ -10,3 +10,26 @@ spec:
   forProvider:
     ttl: 600
     zone: terraform.example.io
+
+---
+
+apiVersion: ns1.crossplane.io/v1alpha1
+kind: Record
+metadata:
+  annotations:
+    meta.upbound.io/example-id: ns1/v1alpha1/zone
+  labels:
+    testing.upbound.io/example-name: example_ns_management_ns
+  name: example-ns-management-ns
+spec:
+  forProvider:
+    answers:
+    - answer: some_other_nameserver.example.com
+    domain: ${ns1_zone.example_ns_management.zone}
+    dynamic:
+      answers:
+      - content:
+        - answer: ${answers.value}
+        for_each: ${split(",", ns1_zone.example_ns_management.dns_servers)}
+    type: NS
+    zone: ${ns1_zone.example_ns_management.zone}

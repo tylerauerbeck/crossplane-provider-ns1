@@ -1,0 +1,60 @@
+apiVersion: ns1.crossplane.io/v1alpha1
+kind: Record
+metadata:
+  annotations:
+    meta.upbound.io/example-id: ns1/v1alpha1/record
+  labels:
+    testing.upbound.io/example-name: www
+  name: www
+spec:
+  forProvider:
+    answers:
+    - answer: terraform.example.io
+      meta:
+        up: '{"feed":"${ns1_datafeed.foo.id}"}'
+      region: east
+    - answer: terraform.example.io
+      meta:
+        connections: 3
+        up: '{"feed":"${ns1_datafeed.bar.id}"}'
+    - answer: terraform.example.io
+      meta:
+        pulsar: |-
+          ${jsonencode([{
+                  "job_id"     = "abcdef",
+                  "bias"       = "*0.55",
+                  "a5m_cutoff" = 0.9
+                }])}
+        subdivisions: "${jsonencode({\n\t\t\t  \"BR\" = [\"SP\", \"SC\"],\n\t\t\t
+          \ \"DZ\" = [\"01\", \"02\", \"03\"]\n\t\t  })}"
+    domain: terraform.example.io
+    filters:
+    - config:
+        "N": 1
+      filter: select_first_n
+    meta:
+      up: true
+    regions:
+    - meta:
+        georegion: US-EAST
+      name: east
+    - meta:
+        country: US
+      name: usa
+    ttl: 60
+    type: CNAME
+    zone: terraform.example.io
+
+---
+
+apiVersion: ns1.crossplane.io/v1alpha1
+kind: Zone
+metadata:
+  annotations:
+    meta.upbound.io/example-id: ns1/v1alpha1/record
+  labels:
+    testing.upbound.io/example-name: example
+  name: example
+spec:
+  forProvider:
+    zone: terraform.example.io
